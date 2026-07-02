@@ -113,8 +113,61 @@ You'll see the red X and the inline comment appear on the PR within a minute. Fi
 
 ---
 
+## Adding an AI reviewer on top of Reviewdog
+
+Reviewdog catches _mechanical_ issues (lint rules). An **AI reviewer** adds
+_natural-language_ review — it explains bugs, suggests improvements, and answers
+questions in the PR. Here's what's free and what isn't:
+
+| Tool                   | Free?                                         | Setup effort                            |
+| ---------------------- | --------------------------------------------- | --------------------------------------- |
+| **CodeRabbit**         | ✅ **Free for public repos** (this one is)    | Install a GitHub App (~2 min, no code)  |
+| **Claude Code Action** | ❌ Needs an Anthropic API key (pay-per-use)   | Add a workflow + an `ANTHROPIC_API_KEY` |
+| **GitHub Copilot**     | ⚠️ Needs a Copilot subscription (mostly paid) | Enable in repo settings                 |
+
+### Option A — CodeRabbit (free, recommended)
+
+The repo already includes a `.coderabbit.yaml` config. To turn it on:
+
+1. Go to **https://coderabbit.ai** and **"Sign up with GitHub"** (free).
+2. Authorize it and **install the CodeRabbit GitHub App** on this repository
+   (`github-code-reviews-demo`).
+3. That's it. Open (or re-open) a PR — CodeRabbit will post a summary and inline
+   AI review comments automatically. Nothing to add to your workflows.
+
+> CodeRabbit runs on **their** servers, not GitHub Actions, so it doesn't appear
+> as a CI check — it just comments on the PR alongside Reviewdog.
+
+### Option B — Claude Code Action (paid, most capable)
+
+Free the _action_ is; the API usage it consumes is not. If you have an
+[Anthropic API key](https://console.anthropic.com):
+
+1. Repo → **Settings → Secrets and variables → Actions → New repository secret**,
+   name it `ANTHROPIC_API_KEY`.
+2. Add `.github/workflows/claude-review.yml`:
+
+   ```yaml
+   name: Claude Review
+   on:
+     pull_request:
+   permissions:
+     contents: read
+     pull-requests: write
+   jobs:
+     claude:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v4
+         - uses: anthropics/claude-code-action@v1
+           with:
+             anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+             prompt: 'Review this PR for bugs and clarity. Leave inline comments.'
+   ```
+
+---
+
 ## Where to go next
 
-- **AI code review:** add [CodeRabbit](https://coderabbit.ai), GitHub Copilot code review, or Claude's GitHub Action for natural-language review comments (these need an account / API key).
 - **More checks:** type-checking (TypeScript), security scanning (`npm audit`, CodeQL), test coverage thresholds.
 - **Matrix builds:** run the `test` job across multiple Node versions or operating systems.
