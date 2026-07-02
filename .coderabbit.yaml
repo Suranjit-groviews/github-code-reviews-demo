@@ -1,0 +1,22 @@
+# CodeRabbit configuration — https://docs.coderabbit.ai/getting-started/configure-coderabbit
+# CodeRabbit is FREE for public / open-source repositories.
+# This file is optional; CodeRabbit works with sensible defaults even without it.
+# It only takes effect AFTER you install the CodeRabbit GitHub App (see README).
+language: en-US
+reviews:
+  # "chill" = concise, friendly reviews. Other options: "assertive".
+  profile: chill
+  # Post a high-level summary of the PR at the top.
+  high_level_summary: true
+  # Show a status/progress comment while reviewing.
+  review_status: true
+  # Don't force a "changes requested" block; leave merging up to you + CI.
+  request_changes_workflow: false
+  poem: false
+  auto_review:
+    # Automatically review every new PR (no need to @-mention the bot).
+    enabled: true
+    drafts: false
+chat:
+  # Let you @coderabbitai in PR comments to ask questions.
+  auto_reply: true
