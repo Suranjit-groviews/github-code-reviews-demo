@@ -33,3 +33,19 @@ export function divide(a, b) {
   }
   return a / b;
 }
+
+/**
+ * Return the average of an array of numbers.
+ * @param {number[]} numbers
+ * @returns {number}
+ */
+export function average(numbers) {
+  if (numbers.length === 0) {
+    return 0;
+  }
+  let sum = 0;
+  for (let i = 0; i < numbers.length; i++) {
+    sum += numbers[i];
+  }
+  return sum / numbers.length;
+}
