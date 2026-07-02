@@ -1,0 +1,19 @@
+{
+  "name": "github-code-reviews-demo",
+  "version": "1.0.0",
+  "description": "A tiny Node.js project that demonstrates automatic code review on GitHub via CI (GitHub Actions) + inline PR comments (Reviewdog).",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.0.0"
+  }
+}

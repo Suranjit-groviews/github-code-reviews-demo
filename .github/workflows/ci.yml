@@ -1,0 +1,74 @@
+# .github/workflows/ci.yml
+# This file IS the automation. GitHub reads it and runs the jobs below automatically
+# whenever someone opens/updates a Pull Request, or pushes to `main`.
+
+name: CI
+
+# WHEN should this run?
+on:
+  pull_request: # on every PR (any target branch)
+  push:
+    branches: [main] # and on direct pushes to main
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # JOB 1: the pass/fail gate. Lints, checks formatting, and runs tests.
+  # This is the check you make "required" via branch protection.
+  # ---------------------------------------------------------------------------
+  test:
+    name: Lint, format & test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies (clean, reproducible)
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Run tests
+        run: npm test
+
+  # ---------------------------------------------------------------------------
+  # JOB 2: the reviewer. Posts ESLint findings as INLINE comments on the PR.
+  # Uses Reviewdog — free, no external account, uses GitHub's built-in token.
+  # (Only runs on pull_request events, since there's no PR to comment on for pushes.)
+  # ---------------------------------------------------------------------------
+  review:
+    name: Inline ESLint review (Reviewdog)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # needed so Reviewdog can post comments
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Reviewdog + ESLint
+        uses: reviewdog/action-eslint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review # leave inline comments on the PR diff
+          eslint_flags: '.'
+          fail_level: none # comment, but don't fail this job on findings
