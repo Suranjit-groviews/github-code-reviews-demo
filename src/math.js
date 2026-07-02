@@ -33,3 +33,6 @@ export function divide(a, b) {
   }
   return a / b;
 }
+
+// Deliberate lint error to demonstrate the automatic reviewer:
+const unusedVariable = 42;
